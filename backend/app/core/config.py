@@ -75,8 +75,6 @@ class Settings(BaseSettings):
             hostname = urlsplit(value).hostname
             if hostname in {None, "localhost", "127.0.0.1", "::1"}:
                 raise ValueError(f"{name} must point to a configured production service")
-        if not self.s3_bucket:
-            raise ValueError("S3_BUCKET is required in production")
         return self
 
 

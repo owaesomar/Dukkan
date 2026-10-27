@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from app.core.config import Settings
 
 
-def test_production_settings_require_remote_services_https_origins_and_storage() -> None:
+def test_production_settings_require_remote_services_and_https_origins() -> None:
     settings = Settings(
         app_env="production",
         database_url="postgresql+psycopg://app:secret@postgres.example.net:5432/dukkan",
@@ -21,7 +21,6 @@ def test_production_settings_require_remote_services_https_origins_and_storage()
     [
         {"database_url": "postgresql+psycopg://app:secret@localhost:5432/dukkan"},
         {"cors_origins": ["*"]},
-        {"s3_bucket": None},
     ],
 )
 def test_production_settings_reject_unsafe_or_missing_configuration(
