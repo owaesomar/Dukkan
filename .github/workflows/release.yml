@@ -1,0 +1,27 @@
+name: Release API image
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: read
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GitHub Container Registry
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Build and publish immutable release tag
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}/api:${GITHUB_REF_NAME}"
+          docker build --pull --tag "$IMAGE" --file backend/Dockerfile backend
+          docker push "$IMAGE"
